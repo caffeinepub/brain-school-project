@@ -1,0 +1,61 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-05T22:26:12.292Z",
+  "summary": "BuildRequest contains no requirements or acceptance criteria. The diff adds a Motoko migration module and updates backend main actor wiring, plus various frontend changes (not fully shown) including partner content updates and i18n-related features per the file summaries. With no stated requirements, nothing can be classified as missing; any added functionality is technically out-of-scope relative to an empty request.",
+  "missing_requirements": [],
+  "hallucinated_features": [
+    {
+      "description": "Introduced Motoko migration scaffolding (backend/migration.mo) and wired it into the backend actor along with blob-storage mixin usage.",
+      "reason": "No requirements were provided in the BuildRequest; this is additional functionality not requested.",
+      "evidence": [
+        "backend/migration.mo",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Added/expanded frontend bilingual (EN/DA) i18n system and language-switching UI across the site (provider, translations, header switch, translated sections).",
+      "reason": "No requirements were provided in the BuildRequest; this is additional functionality not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt",
+        "frontend/src/components/Header.tsx",
+        "frontend/src/i18n/I18nProvider.tsx",
+        "frontend/src/i18n/translations.ts",
+        "frontend/src/i18n/useI18n.ts"
+      ]
+    },
+    {
+      "description": "Added export package generator functionality with bilingual export behavior and new dependencies (jszip, file-saver).",
+      "reason": "No requirements were provided in the BuildRequest; this is additional functionality not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt",
+        "frontend/src/components/ExportPackageGenerator.tsx",
+        "frontend/package.json"
+      ]
+    },
+    {
+      "description": "Added scroll-triggered animation hook and expanded global CSS animations/reduced-motion support.",
+      "reason": "No requirements were provided in the BuildRequest; this is additional functionality not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt",
+        "frontend/src/hooks/useScrollAnimation.ts",
+        "frontend/src/index.css"
+      ]
+    },
+    {
+      "description": "Updated Partners section partner dataset/content and bilingual descriptions (as shown in truncated diff).",
+      "reason": "No requirements were provided in the BuildRequest; content updates are not traceable to any requested change.",
+      "evidence": [
+        "frontend/src/components/PartnersSection.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.66,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/PartnersSection.tsx",
+    "project_state.json"
+  ]
+}

@@ -1,0 +1,302 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 11,
+  "summary": "BrAIn is a React + Tailwind one-page public website for an Erasmus+ school education project, presenting project information with rich scroll-triggered animations and responsive navigation, with planned bilingual support (English/Danish) via a language switch and full Danish translation. The frontend includes optional DFINITY Internet Identity authentication and actor-creation plumbing (React Query) intended to talk to an Internet Computer (Motoko) backend. The backend provides persistent storage for project content (partners, images, sections) and includes a blob-storage management mixin with authorization/cycle refill utilities.",
+  "architectural_notes": [
+    "Frontend is a React SPA composed of section components rendered by App.tsx; navigation is anchor/scroll-based (no router).",
+    "Styling uses Tailwind CSS with OKLCH CSS-variable theming, dark-mode tokens, and custom global animation/hover utility classes (index.css).",
+    "Scroll-triggered UI animations are implemented via a custom IntersectionObserver hook (useScrollAnimation) with prefers-reduced-motion support and staggered transitions.",
+    "Data-fetching/auth plumbing uses @tanstack/react-query; an 'actor' instance is treated as cached query state keyed by identity principal (useActor).",
+    "Authentication uses DFINITY Internet Identity via @dfinity/auth-client, exposing a React Context provider (InternetIdentityProvider) for identity/login/logout state.",
+    "Backend is a Motoko canister using mo:core Map for in-memory/persistent-like state and exposes query/shared methods for partners/content/images.",
+    "Blob-storage utilities are implemented via a Motoko module + mixin pattern (blob-storage/Storage.mo and blob-storage/Mixin.mo), leveraging Prim storage primitives for blob lifecycle/GC and authorized gateway lists retrieved from an external 'cashier' canister.",
+    "Planned i18n: introduce an English/Danish language toggle and translated string/content source for all sections.",
+    "Ensure the i18n provider (I18nProvider) wraps the entire React component tree (e.g., in main.tsx/App.tsx) so any components using useI18nContext cannot render outside the provider."
+  ],
+  "known_issues": [
+    "Frontend currently hardcodes partner data in PartnersSection; backend has getPersistentPartners() but the frontend does not call it (useQueries.ts is a placeholder).",
+    "frontend/src/components/ContentSection.tsx is empty (stubbed file), suggesting incomplete refactor or unused component.",
+    "Backend main.mo exposes mutating methods (setPersistentContent, addPersistentImage, removePersistentImage, initializePersistentPartners) without any access control checks; this is likely a security gap if deployed publicly.",
+    "useActor() attempts to call initializeAccessControl or _initializeAccessControlWithSecret if present on the backend actor, but backend/main.mo does not implement these methods (no-op path today).",
+    "Partner metadata differs between frontend and backend (logoPath naming/format differences; some backend URLs are missing scheme or contain spaces/encoded artifacts), which may cause broken links/assets if the frontend switches to backend data.",
+    "Blob-storage authorization list starts empty and must be populated by calling _caffeineStorageUpdateGatewayPrincipals(); until then, deletion APIs will trap as unauthorized for all callers.",
+    "blob-storage/Storage.mo requires CAFFFEINE_STORAGE_CASHIER_PRINCIPAL env var; missing configuration will trap at runtime.",
+    "ExportPackageGenerator embeds very large HTML/CSS/JS strings directly in the component file; this is hard to maintain and risks drift from the live React site.",
+    "Deployed draft shows a blank/white page due to runtime error: \"useI18nContext must be used within I18nProvider\" (i18n hook used without provider), causing the React app to crash."
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "IF-1",
+      "title": "One-page BrAIn project website composition",
+      "synonyms": [
+        "Landing page",
+        "Single-page site"
+      ],
+      "description": "App.tsx renders a complete single-page marketing/informational site with header, hero, about, objectives, results & outputs, target groups, partners, social media, and footer sections.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-2",
+      "title": "Sticky header with responsive navigation and smooth scrolling",
+      "synonyms": [
+        "Top nav",
+        "Mobile drawer menu"
+      ],
+      "description": "Header.tsx provides a sticky top bar with desktop navigation buttons that smooth-scroll to section IDs, plus a mobile Sheet-based menu and a NEWS link button.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-3",
+      "title": "Hero section with branded background and entrance animations",
+      "synonyms": [
+        "Hero banner"
+      ],
+      "description": "Hero.tsx displays a large hero with a generated background image overlay, project identification text, and animated badge/title/subtitle/tagline styling.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-4",
+      "title": "About section with animated content and banner image",
+      "synonyms": [
+        "Project description"
+      ],
+      "description": "AboutSection.tsx shows the project logo, descriptive paragraphs, and a banner image with hover-zoom; all elements use scroll-triggered animations.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-5",
+      "title": "Objectives section with icon cards",
+      "synonyms": [
+        "Goals section"
+      ],
+      "description": "ObjectivesSection.tsx renders six objective cards with lucide icons, hover-lift effects, and staggered scroll-in animations.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-6",
+      "title": "Results & Outputs section",
+      "synonyms": [
+        "Deliverables",
+        "Outputs"
+      ],
+      "description": "ResultsOutputsSection.tsx presents three key deliverables (framework, handbook, platform) with generated icon images, hover effects (lift/rotate/scale), and scroll-triggered animation.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-7",
+      "title": "Target groups section",
+      "synonyms": [
+        "Audience section"
+      ],
+      "description": "TargetGroupsSection.tsx renders cards for students, educators, and families with generated icons/images and animated/hoverable card UI.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-8",
+      "title": "Partners directory section",
+      "synonyms": [
+        "Consortium section"
+      ],
+      "description": "PartnersSection.tsx lists partner organizations with logos (lazy-loaded), country labels, descriptions, and external website links; includes staggered scroll animations and hover transitions.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-9",
+      "title": "Social media and resources section",
+      "synonyms": [
+        "Connect section"
+      ],
+      "description": "SocialMediaSection.tsx displays cards linking to EPALE/Facebook/Instagram/LinkedIn and prominent CTA buttons for newsletters and the project brochure.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-10",
+      "title": "Footer with EU co-funding branding and disclaimer",
+      "synonyms": [
+        "EU disclaimer footer"
+      ],
+      "description": "Footer.tsx shows the EU co-funded image and disclaimer text with scroll-triggered animations plus the copyright notice.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Scroll-triggered animation system with reduced-motion support",
+      "synonyms": [
+        "IntersectionObserver animations"
+      ],
+      "description": "useScrollAnimation.ts provides visibility tracking via IntersectionObserver; index.css defines reusable animation/transition classes, stagger delays, will-change optimizations, and prefers-reduced-motion fallbacks.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-12",
+      "title": "Tailwind theming using OKLCH CSS variables and dark-mode tokens",
+      "synonyms": [
+        "Design system",
+        "Theme tokens"
+      ],
+      "description": "tailwind.config.js and index.css define OKLCH color variables, component color mappings, border radius tokens, and Tailwind plugins for typography/container queries/animation utilities.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Divi/WordPress export package generator",
+      "synonyms": [
+        "HTML export",
+        "Static site export"
+      ],
+      "description": "ExportPackageGenerator.tsx can generate and download separate HTML, CSS, JS, and integration README files via Blob + URL.createObjectURL to support embedding the site into Divi (assets copied manually).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "Internet Identity authentication provider",
+      "synonyms": [
+        "II login",
+        "DFINITY auth context"
+      ],
+      "description": "useInternetIdentity.ts implements a React Context provider using @dfinity/auth-client, supporting identity restoration, login, logout/clear, and status flags.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-15",
+      "title": "Backend actor creation and caching with React Query",
+      "synonyms": [
+        "IC actor hook",
+        "Agent identity wiring"
+      ],
+      "description": "useActor.ts creates an anonymous or authenticated backend actor via createActorWithConfig, caches it by principal using React Query, and optionally calls backend access-control init methods when present; it also invalidates/refetches dependent queries when identity changes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-16",
+      "title": "Secure URL secret/token handling utilities",
+      "synonyms": [
+        "Admin token parsing",
+        "Hash secret extraction"
+      ],
+      "description": "urlParams.ts supports extracting parameters from query/hash, persisting values in sessionStorage, and securely extracting secrets from the URL hash while removing them from the address bar/history.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-17",
+      "title": "Motoko backend persistent content stores (partners, images, content)",
+      "synonyms": [
+        "Content canister",
+        "Partners API"
+      ],
+      "description": "backend/main.mo defines types for partners/sections/content and provides methods to initialize partners, query partners (all or by range), add/remove/list images, and get/set full persistent content and footer section.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-18",
+      "title": "Motoko blob-storage gateway management and GC utilities",
+      "synonyms": [
+        "Storage mixin",
+        "Dead blob pruning"
+      ],
+      "description": "backend/blob-storage/Storage.mo and Mixin.mo implement authorized gateway principal management via a cashier canister, cycles refill/top-up, blob liveness queries, retrieval of dead blobs to delete, confirmation/pruning with forced GC, and a simple upload certificate response.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-client-side-i18n-system-supporting-exactly-two-languages-english-en-and-danish-da-and-make-it-available-to-all-react-components",
+      "title": "Implement a client-side i18n system supporting exactly two languages (English `en` and Danish `da`) and make it available to all React components.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-english-danish-language-switch-control-to-the-existing-sticky-header-that-works-on-both-desktop-and-mobile-navigation-layouts",
+      "title": "Add an English/Danish language switch control to the existing sticky Header that works on both desktop and mobile navigation layouts.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-translate-all-user-facing-text-content-on-the-website-into-danish-and-ensure-the-language-toggle-switches-the-entire-ui-between-english-and-danish",
+      "title": "Translate all user-facing text content on the website into Danish and ensure the language toggle switches the entire UI between English and Danish.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-when-the-user-switches-languages-update-document-metadata-appropriately-for-the-selected-language",
+      "title": "When the user switches languages, update document metadata appropriately for the selected language.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-wordpress-divi-export-feature-strings-are-also-bilingual-so-any-generated-export-content-can-be-produced-in-danish-or-english-consistently-with-the-selected-language",
+      "title": "Ensure the WordPress/Divi export feature strings are also bilingual so any generated export content can be produced in Danish or English consistently with the selected language.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-runtime-crash-causing-a-blank-white-page-by-ensuring-all-components-that-call-the-i18n-hook-are-rendered-within-an-active-i18nprovider-so-usei18ncontext-never-throws",
+      "title": "Fix the runtime crash causing a blank/white page by ensuring all components that call the i18n hook are rendered within an active I18nProvider (so `useI18nContext` never throws).",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-provider-mounting-fix-without-modifying-immutable-frontend-entry-files-e-g-do-not-edit-frontend-src-main-tsx-instead-wrap-the-existing-application-composition-in-a-non-immutable-location-e-g-inside-frontend-src-app-tsx-so-the-i18nprovider-is-always-present-before-header-and-other-sections-render",
+      "title": "Implement the provider mounting fix without modifying immutable frontend entry files (e.g., do not edit `frontend/src/main.tsx`); instead, wrap the existing application composition in a non-immutable location (e.g., inside `frontend/src/App.tsx`) so the I18nProvider is always present before Header (and other sections) render.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-english-is-the-default-main-language-on-first-load-while-preserving-the-existing-english-danish-dropdown-switch-behavior-and-persisted-selection",
+      "title": "Ensure English is the default (main) language on first load, while preserving the existing English/Danish dropdown switch behavior and persisted selection.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Add English/Danish language switch button and provide full Danish translation for all website text/content",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Integrate Danish translations for partner descriptions into the Danish version of the Partners section",
+      "reqIds": [],
+      "status": "in_progress"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "BrAIn School Project",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

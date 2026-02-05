@@ -1,0 +1,22 @@
+{
+  "frontend/src/App.tsx": "Main application component wrapping the complete BrAIn website with I18nProvider to ensure all components have access to the language context before rendering header, hero, sections, and footer.",
+  "frontend/src/hooks/useQueries.ts": "Placeholder hooks file for future backend query integration; currently partners data is handled statically in the component.",
+  "frontend/src/components/Header.tsx": "Sticky navigation header with language switch dropdown (EN/DA) using Globe icon, accessible keyboard navigation, and mobile Sheet menu that includes the language selector.",
+  "frontend/src/components/Hero.tsx": "Hero section with translated Erasmus+ badge, project number, and tagline using the i18n system.",
+  "frontend/src/components/ContentSection.tsx": "Reusable content section component that displays title, paragraphs, and images with different background variants.",
+  "frontend/src/components/Footer.tsx": "Footer component with translated EU logo alt text, disclaimer, and copyright notice using the i18n system.",
+  "frontend/src/index.css": "Global styles with OKLCH color system, comprehensive animation keyframes (fade-in, slide-up, zoom-in), scroll-triggered animation classes with staggered delays, hover effects, performance optimizations with will-change, and reduced motion support for accessibility.",
+  "frontend/src/components/AboutSection.tsx": "About section with translated title, four paragraphs of content, logo alt text, and banner image alt text using the i18n system.",
+  "frontend/src/components/ObjectivesSection.tsx": "Project objectives section with six translated objective cards (titles and descriptions) using the i18n system.",
+  "frontend/src/components/TargetGroupsSection.tsx": "Target groups section with three translated cards for students, educators, and families using the i18n system.",
+  "frontend/src/components/PartnersSection.tsx": "Partners section with bilingual support displaying partner cards with logos, names, countries, and descriptions that switch between English and Danish based on the selected language, along with translated section title, description, and \"Visit Website\" label.",
+  "frontend/src/components/SocialMediaSection.tsx": "Social media section with translated titles, descriptions, button labels (Visit, Newsletters, Project Brochure) using the i18n system.",
+  "frontend/src/components/ResultsOutputsSection.tsx": "Results & Outputs section with three translated output cards and icon alt text template using the i18n system.",
+  "frontend/src/components/ExportPackageGenerator.tsx": "Export package generator with full bilingual support for UI labels, alerts, and generated HTML/README content that adapts to the currently selected language at export time.",
+  "frontend/package.json": "Updated package.json with added dependencies jszip and file-saver for generating and downloading the HTML export package.",
+  "frontend/src/hooks/useScrollAnimation.ts": "Custom React hook that uses Intersection Observer to trigger scroll-based animations with support for reduced motion preferences and configurable thresholds.",
+  "frontend/src/i18n/translations.ts": "Central translation dictionary containing all English and Danish translations for the entire website, including document metadata, navigation, sections, and export functionality with type-safe translation keys.",
+  "frontend/src/i18n/I18nProvider.tsx": "React context provider that manages language state (en/da) with safe localStorage access, persists selection, provides translation function, and updates document title and lang attribute when language changes.",
+  "frontend/src/i18n/useI18n.ts": "Simple hook that exposes the i18n context (language, setLanguage, t function) for use in components.",
+  "frontend/src/main.tsx": "Application entry point wrapping the app with QueryClient, InternetIdentity, and I18nProvider for global language support."
+}
